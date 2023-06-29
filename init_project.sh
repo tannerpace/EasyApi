@@ -60,7 +60,7 @@ echo "Initializing a new Node.js project..."
 pnpm init 
 
 echo "Installing necessary dependencies..."
-pnpm install express jsonwebtoken express-jwt helmet cors dotenv prisma typescript ts-node @types/node
+pnpm install express jsonwebtoken express-jwt helmet cors dotenv prisma typescript ts-node @types/node 
 
 echo "Installing necessary devDependencies..."
 pnpm install -D @types/express @types/node @types/jsonwebtoken @types/cors ts-node typescript nodemon
@@ -206,9 +206,174 @@ mkdir src/routes
 mkdir src/models
 mkdir src/utils
 
+
+# Adding a single prisma instance
+cat << EOF > src/middleware/client.ts
+import { PrismaClient } from '@prisma/client'
+
+const prisma: PrismaClient = new PrismaClient()
+
+// if (process.env.NODE_ENV === 'production') {
+//   prisma = new PrismaClient()
+// }
+
+// if (!prisma) {
+//   prisma = new PrismaClient()
+// }
+
+
+
+export default prisma
+EOF
+
+# Adding hash MiddleWarwes
+cat << EOF > src/middleware/hash.ts
+import crypto from 'crypto';
+
+const hashPassword = (password: string, salt = crypto.randomBytes(16).toString('hex')) => {
+  return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
+}
+
+const verifyPassword = (password: string, hashedPassword: string, salt: string | undefined) => {
+  const passwordData = hashPassword(password, salt);
+  return passwordData === hashedPassword;
+}
+
+export {
+  hashPassword,
+  verifyPassword
+}
+EOF
+
+# Adding  authentication Middlewares
+cat << EOF > src/middleware/authentication.js
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+import prisma from './client';
+
+interface ParsedToken {
+  userData: {
+    id: number;
+  };
+  iat: number;
+  exp: number;
+}
+
+interface RequestWithUser extends Request {
+  user: {
+    id: number;
+    refresh_token: string | null;
+  };
+  parsedToken: ParsedToken;
+}
+
+const checkUserToken = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ error: 'JWT must be provided' });
+    }
+
+    const parsedToken = verifyToken(token);
+    if (!parsedToken) {
+      throw new Error('Invalid token');
+    }
+
+    req.parsedToken = parsedToken;
+
+    const user = await getUserFromToken(parsedToken);
+    if (!user || !user.refresh_token) {
+      return res
+        .status(401)
+        .json({ error: 'No user found for this token or refresh token is not set' });
+    }
+
+    req.user = user;
+    await updateLastLogin(user.id);
+  } catch (err) {
+    return handleError(err as Error, res);
+  }
+
+  next();
+};
+
+const verifyToken = (token: string): ParsedToken | null => {
+  if (
+    typeof token !== 'string' ||
+    !/^Bearer [a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+$/.test(token)
+  ) {
+    return null;
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT secret is not defined');
+  }
+
+  try {
+    return jwt.verify(token.split(' ')[1], secret) as ParsedToken;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err.name === 'TokenExpiredError') {
+      throw new Error('Token has expired');
+    }
+    throw new Error('Error validating token');
+  }
+};
+
+const getUserFromToken = async (
+  parsedToken: ParsedToken
+): Promise<{ id: number; refresh_token: string | null }> => {
+  if (typeof parsedToken.userData.id !== 'number') {
+    throw new Error('Invalid user ID in token');
+  }
+
+  return (await prisma.user.findFirst({
+    where: {
+      id: parsedToken.userData.id,
+    },
+    select: { id: true, refresh_token: true },
+  })) as { id: number; refresh_token: string | null };
+};
+
+const updateLastLogin = async (userId: number): Promise<void> => {
+  await prisma.user
+    .update({
+      where: { id: userId },
+      data: { last_login: new Date() },
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log('Error updating last login ', err);
+      throw new Error('Error updating last login');
+    });
+};
+
+const handleError = (err: Error, res: Response): Response => {
+  console.error(err);
+  if (err.message === 'Token has expired') {
+    return res.status(401).json({ error: err.message });
+  }
+  return res.status(500).json({ error: 'Error occurred' });
+};
+
+export default checkUserToken;
+EOF
+
+
+
+
 # Creating a user router
 cat << EOF > src/routes/userRouter.ts
+
+
 import express, { Router } from 'express';
+
+import prisma from "../middleware/client";
+import { hashPassword } from '../middleware/hash';
+
+
 
 const userRouter: Router = express.Router();
 
@@ -217,7 +382,33 @@ userRouter.get('/', (req, res) => {
   res.json({ message: 'Hello user' });
 });
 
-export default userRouter
+
+
+userRouter.post('/', async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  try {
+    const hashedPassword = hashPassword(password);
+    const user = await prisma.user.create({
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password: hashedPassword,
+      },
+    });
+    res.json({
+      message: 'User created', user: {
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+      }
+    });
+  } catch (error) {
+    res.json({ message: 'User not created' });
+  }
+});
+
+export default userRouter;
 EOF
 
 echo "Generating JWT secret..."
