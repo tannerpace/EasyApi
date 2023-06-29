@@ -79,15 +79,29 @@ echo "Adding User model to Prisma schema..."
 
 cat << EOF >> prisma/schema.prisma
 
+enum Role {
+  GUEST
+  USER
+  ADMIN
+  SUPERADMIN
+  API_USER
+}
+
+
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  first_name String?
-  last_name String?
-  user_name String?
-  password String?
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  first_name     String?
+  last_name      String?
+  user_name      String?
+  password       String?
+  token          String?
+  refresh_token  String?
+  last_login     DateTime?
+  role           Role     @default(USER)
 }
 EOF
+
 
 echo "User model added to Prisma schema."
 
