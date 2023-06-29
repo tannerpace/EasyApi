@@ -71,8 +71,8 @@ npx prisma
 echo "Initializing Prisma..."
 npx prisma init
 
-echo "Appending database connection URL to .env file..."
-echo "DATABASE_URL=\"mysql://$mysql_username:$mysql_password@localhost:3306/$database_name\"" >> .env
+echo "Writing database connection URL to .env file..."
+echo "DATABASE_URL=\"mysql://$mysql_username:$mysql_password@localhost:3306/$database_name\"" > .env
 
 
 echo "Adding User model to Prisma schema..."
@@ -164,8 +164,6 @@ cat << EOF > tsconfig.json
 }
 EOF
 
-echo "Appending database connection URL to .env file..."
-echo "DATABASE_URL=\"mysql://$mysql_username:$mysql_password@localhost:3306/$database_name\"" >> .env
 
 echo "Updating prisma/schema.prisma file with MySQL datasource..."
 sed -i -e 's|url = ".*"|url = env("DATABASE_URL")|g' prisma/schema.prisma
