@@ -117,10 +117,22 @@ module.exports = {
     "spaced-comment": "error",
     "no-unused-vars": "warn",
     "@typescript-eslint/no-unused-vars": "error",
-    "simple-import-sort/imports": "warn",
-    "simple-import-sort/exports": "warn",
     "@typescript-eslint/array-type": ["error", { default: "array" }],
     "import/no-anonymous-default-export": ["error"],
+    "import/order": [
+      "error",
+      {
+        groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "newlines-between": "always",
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+      },
+    ],
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error"
   },
 }
 EOF
