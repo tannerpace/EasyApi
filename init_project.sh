@@ -69,7 +69,7 @@ echo "Prisma via npx"
 npx prisma
 
 echo "Initializing Prisma..."
-npx prisma init
+npx prisma init --datasource-provider mysql
 
 echo "Writing database connection URL to .env file..."
 echo "DATABASE_URL=\"mysql://$mysql_username:$mysql_password@localhost:3306/$database_name\"" > .env
@@ -177,9 +177,9 @@ cat << EOF > tsconfig.json
 EOF
 
 
-echo "Updating prisma/schema.prisma file with MySQL datasource..."
-sed -i -e 's|url = ".*"|url = env("DATABASE_URL")|g' prisma/schema.prisma
-sed -i -e 's/provider = ".*"/provider = "mysql"/g' prisma/schema.prisma
+# echo "Updating prisma/schema.prisma file with MySQL datasource..."
+# sed -i -e 's|url = ".*"|url = env("DATABASE_URL")|g' prisma/schema.prisma
+# sed -i -e 's/provider = ".*"/provider = "mysql"/g' prisma/schema.prisma
 
 echo "Generating Prisma client..."
 npx prisma migrate dev --name init
