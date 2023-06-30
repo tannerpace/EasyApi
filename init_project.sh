@@ -98,6 +98,7 @@ model User {
   token          String?
   refresh_token  String?
   last_login     DateTime?
+  salt           String?
   role           Role     @default(USER)
 }
 EOF
@@ -230,19 +231,26 @@ EOF
 cat << EOF > src/middleware/hash.ts
 import crypto from 'crypto';
 
-const hashPassword = (password: string, salt = crypto.randomBytes(16).toString('hex')) => {
-  return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
+interface IHashedPassword {
+  salt: string;
+  hashedPassword: string;
 }
 
-const verifyPassword = (password: string, hashedPassword: string, salt: string | undefined) => {
+const hashPassword = (password: string, salt = crypto.randomBytes(16).toString('hex')): IHashedPassword => {
+  const hashedPassword = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
+  return { salt, hashedPassword };
+}
+
+const verifyPassword = (password: string, hashedPassword: string, salt: string): boolean => {
   const passwordData = hashPassword(password, salt);
-  return passwordData === hashedPassword;
+  return passwordData.hashedPassword === hashedPassword;
 }
 
 export {
   hashPassword,
   verifyPassword
 }
+
 EOF
 
 # Adding  authentication Middlewares
@@ -371,9 +379,7 @@ cat << EOF > src/routes/userRouter.ts
 import express, { Router } from 'express';
 
 import prisma from "../middleware/client";
-import { hashPassword } from '../middleware/hash';
-
-
+import { hashPassword, verifyPassword } from '../middleware/hash';
 
 const userRouter: Router = express.Router();
 
@@ -382,18 +388,18 @@ userRouter.get('/', (req, res) => {
   res.json({ message: 'Hello user' });
 });
 
-
-
+// POST /user (user registration)
 userRouter.post('/', async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   try {
-    const hashedPassword = hashPassword(password);
+    const { salt, hashedPassword } = hashPassword(password);
     const user = await prisma.user.create({
       data: {
         first_name: firstName,
         last_name: lastName,
         email,
         password: hashedPassword,
+        salt: salt,
       },
     });
     res.json({
@@ -408,7 +414,36 @@ userRouter.post('/', async (req, res) => {
   }
 });
 
+// POST /login (user login)
+userRouter.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (user && user.salt && user.password) {
+      if (verifyPassword(password, user.password, user.salt)) {
+        console.info('User logged in');
+        res.json({ message: 'User logged in' });
+      } else {
+        console.info('Wrong password');
+        res.json({ message: 'Wrong password' });
+      }
+    } else {
+      console.info('User not found');
+      res.json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.info(error);
+    res.json({ message: 'Something went wrong', error });
+  }
+});
+
+
 export default userRouter;
+
 EOF
 
 echo "Generating JWT secret..."
