@@ -53,8 +53,26 @@ mkdir -p $project_directory_path
 cd $project_directory_path
 
 read -p "Enter MySQL username: " mysql_username
+# if mysql_username is empty, use root
+if [ -z "$mysql_username" ]
+then
+  mysql_username=root
+fi
+  
 read -sp "Enter MySQL password: " mysql_password
-read -p "Enter the name of the new MySQL database: " database_name
+# if mysql_password is empty, use password
+if [ -z "$mysql_password" ]
+then
+  mysql_password=password
+fi
+
+read -p "Enter the name of the new MySQL database or leave blank to default it to project name: " database_name
+
+# if database_name is empty, use the project_name
+if [ -z "$database_name" ]
+then
+  database_name=$project_name
+fi
 
 echo "Initializing a new Node.js project..."
 pnpm init 
