@@ -299,6 +299,20 @@ const checkUserToken = async (req: RequestWithUser, res: Response, next: NextFun
 
     req.user = user;
     await updateLastLogin(user.id);
+
+    // Set the token as a cookie
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT secret is not defined');
+    }
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: 3600000, // 1 hour
+      // secure: true, // Enable this option for secure (HTTPS) connections only
+    };
+    const tokenCookie = jwt.sign({ userData: { id: user.id } }, secret, { expiresIn: '1h' });
+    res.cookie('token', tokenCookie, cookieOptions);
+
   } catch (err) {
     return handleError(err as Error, res);
   }
@@ -366,7 +380,13 @@ const handleError = (err: Error, res: Response): Response => {
   return res.status(500).json({ error: 'Error occurred' });
 };
 
-export default checkUserToken;
+export {
+  updateLastLogin,
+  checkUserToken,
+  verifyToken,
+  getUserFromToken,
+  handleError
+};
 EOF
 
 
