@@ -246,7 +246,7 @@ export {
 EOF
 
 # Adding  authentication Middlewares
-cat << EOF > src/middleware/authentication.js
+cat << EOF > src/middleware/authentication.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
