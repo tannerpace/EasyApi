@@ -35,7 +35,7 @@ The script requires the following installed on your machine:
 ## Usage
 
 - Download or clone the bash script to your local machine.
-- Run the script using the command `bash script_name.sh`.
+- Run the script using the command `bash init_project.sh`.
 
 The script will guide you through the rest of the process via prompts.
 
