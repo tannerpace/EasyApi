@@ -1,7 +1,24 @@
 #!/bin/bash
 
 read -p "Enter the name of your project: " project_name
-read -p "Enter the path where you want to create the project (leave empty for current directory): " project_path
+read -p "Enter git hub username: " GH_USERNAME
+read -p "Enter public or private: " VIS
+# Check if repository VIS is provided
+if [ -z "$VIS" ]; then
+  echo "Repository VIS cannot be empty!"
+  exit 1
+fi
+
+# if REPO_NAME is empty, use the current directory
+if [ -z "$REPO_NAME" ]
+then
+  REPO_NAME=$project_name
+fi
+# Check if repository name is provided
+if [ -z "$REPO_NAME" ]; then
+  echo "Repository name cannot be empty!"
+  exit 1
+fi
 # Check if jq is installed
 if ! command -v jq &> /dev/null
 then
@@ -51,7 +68,14 @@ project_directory_path="$project_path/$project_name"
 echo "Creating project directory in $project_directory_path..."
 mkdir -p $project_directory_path
 cd $project_directory_path
-
+git init
+gh repo create $REPO_NAME --$VIS
+echo $REPO_NAME >> README.md
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin "https://github.com/$GH_USERNAME/$REPO_NAME.git"
+git push -u origin main
 read -p "Enter MySQL username: " mysql_username
 # if mysql_username is empty, use root
 if [ -z "$mysql_username" ]
@@ -653,7 +677,14 @@ jq '.scripts.dev = "nodemon ./src/index.ts"' package.json > temp.json && mv temp
 
 
 pnpm install @types/cookie-parser --save-dev 
-pnpm install cookie-parser  
+pnpm install cookie-parser
+
+
+
+git add .
+git commit -m "Initial commit"
+git push -u origin main
+# 
 echo "starting the server"
 pnpm run dev
 echo "setup complete!"
