@@ -376,8 +376,10 @@ EOF
 cat << EOF > src/routes/userRouter.ts
 
 
-import express, { Router } from 'express';
+import express, { Router, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
+import { updateLastLogin } from '../middleware/authentication';
 import prisma from "../middleware/client";
 import { hashPassword, verifyPassword } from '../middleware/hash';
 
@@ -403,46 +405,60 @@ userRouter.post('/', async (req, res) => {
       },
     });
     res.json({
-      message: 'User created', user: {
+      message: 'User created',
+      user: {
         firstName: user.first_name,
         lastName: user.last_name,
         email: user.email,
-      }
+      },
     });
   } catch (error) {
     res.json({ message: 'User not created' });
   }
 });
 
-// POST /login (user login)
-userRouter.post('/login', async (req, res) => {
+userRouter.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({
       where: {
         email,
       },
+      select: { id: true, salt: true, password: true },
     });
     if (user && user.salt && user.password) {
       if (verifyPassword(password, user.password, user.salt)) {
         console.info('User logged in');
-        res.json({ message: 'User logged in' });
+
+        // Generate a JWT for the user
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+          throw new Error('JWT secret is not defined');
+        }
+        const token = jwt.sign({ userData: { id: user.id } }, secret, { expiresIn: '1h' });
+
+        // update last login
+        await updateLastLogin(user.id);
+
+        res
+          .cookie('token', token, { httpOnly: true, maxAge: 3600000 }) // Set the token as an HTTP-only cookie
+          .json({ message: 'User logged in', token });
       } else {
         console.info('Wrong password');
-        res.json({ message: 'Wrong password' });
+        res.status(401).json({ message: 'Wrong password' });
       }
     } else {
       console.info('User not found');
-      res.json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    console.info(error);
-    res.json({ message: 'Something went wrong', error });
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 });
 
-
 export default userRouter;
+
 
 EOF
 
