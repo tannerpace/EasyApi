@@ -414,19 +414,84 @@ EOF
 cat << EOF > src/routes/userRouter.ts
 
 
-import express, { Router, Request, Response } from 'express';
+
+
+import express, { Router, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { updateLastLogin } from '../middleware/authentication';
 import prisma from "../middleware/client";
 import { hashPassword, verifyPassword } from '../middleware/hash';
 
+interface ParsedToken {
+  userData: {
+    id: number;
+  };
+  iat: number;
+  exp: number;
+}
+
+
+
+// Create an instance of the router
 const userRouter: Router = express.Router();
+
+// Middleware function to verify the token
+const verifyToken = (req: any, res: Response, next: NextFunction) => {
+  console.info("hit verify")
+  const token = req.cookies.token; // Access the token from the "token" cookie
+  console.info("token was ", token)
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token not found' });
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT secret is not defined');
+  }
+
+  try {
+    const parsedToken = jwt.verify(token, secret) as ParsedToken;
+    req.parsedToken = parsedToken; // Store the parsed token in the request object for later use
+    next();
+  } catch (err) {
+    // if (err.name === 'TokenExpiredError') {
+    //   return res.status(401).json({ error: 'Token has expired' });
+    // }
+    return res.status(500).json({ error: 'Error validating token' });
+  }
+};
+
+
+// Example protected route handler
+const someProtectedRouteHandler = (req: any, res: Response) => {
+  // Access the parsedToken from the request object
+  const parsedToken = req.parsedToken;
+
+  // Access the user ID from the parsedToken
+  const userId = parsedToken?.userData.id;
+
+  // Perform actions specific to the protected route
+  // ...
+
+  // Send a response
+  res.json({ message: 'Protected route accessed successfully', userId });
+};
+
+// Define the protected route
+userRouter.get('/verify', verifyToken, someProtectedRouteHandler);
+
+
 
 // GET /user
 userRouter.get('/', (req, res) => {
   res.json({ message: 'Hello user' });
 });
+
+
+
+
 
 // POST /user (user registration)
 userRouter.post('/', async (req, res) => {
@@ -498,6 +563,8 @@ userRouter.post('/login', async (req: Request, res: Response) => {
 export default userRouter;
 
 
+
+
 EOF
 
 echo "Generating JWT secret..."
@@ -511,9 +578,11 @@ mysql -u $mysql_username -p$mysql_password -e "CREATE DATABASE $database_name;"
 
 echo "Creating a basic Express server in index.ts file..."
 cat << EOF > src/index.ts
+import cookieParser from 'cookie-parser'; // Import the cookie-parser middleware
+import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import cors from 'cors';
+
 import userRouter from './routes/userRouter';
 
 const app = express();
@@ -522,7 +591,7 @@ const port = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-
+app.use(cookieParser());
 app.use('/user', userRouter);
 
 app.get('/health', (req, res) => {
@@ -533,14 +602,17 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(\`Server is running on port \${port}\`);
+  console.info(`Server is running on port ${port}`);
 });
 EOF
 
 echo "Updating package.json with the new script..."
 jq '.scripts.dev = "nodemon ./src/index.ts"' package.json > temp.json && mv temp.json package.json
 
+
+pnpm install @types/cookie-parser --save-dev 
+pnpm install cookie-parser  
 echo "starting the server"
 pnpm run dev
+echo "setup complete!"
 
-echo "Setup completed."
