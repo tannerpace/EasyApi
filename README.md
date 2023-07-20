@@ -51,6 +51,3 @@ The script will install packages globally on your machine if they are not found,
 
 Contributions are always welcome! Please submit a PR if you have any improvements or feature additions.
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
