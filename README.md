@@ -1,6 +1,6 @@
 # Node.js + Prisma + MySQL Project Setup Script
 
-This script is a bash script used to automatically generate a new project using Node.js, Prisma ORM, and MySQL database. The script includes necessary configurations for TypeScript, Prettier, and ESLint. It also generates a basic user authentication mechanism with hashed passwords.
+This script is a bash script used to automatically generate a new project using Node.js, Prisma ORM, and MySQL database. The script includes necessary configurations for TypeScript, Prettier, and ESLint. It also generates a basic user authentication mechanism with hashed passwords. This makes it easier to get started, and you can change to RDS / Plant Scale later
 
 The script does the following in order:
 
