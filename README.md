@@ -1,5 +1,21 @@
 # Node.js + Prisma + MySQL Project Setup Script
 
+## Getting Started
+
+After installing Tankit, you can easily initialize a new project with all the necessary configurations for Node.js, Prisma, and MySQL, including TypeScript, Prettier, and ESLint setups.
+
+### Prerequisites
+
+Ensure you have Node.js, jq, Homebrew (for macOS), pnpm, and MySQL server installed on your machine.
+
+### Initialize a New Project
+
+Run the following command in your terminal:
+
+```bash
+tankit-init
+```
+
 This script is a bash script used to automatically generate a new project using Node.js, Prisma ORM, and MySQL database. The script includes necessary configurations for TypeScript, Prettier, and ESLint. It also generates a basic user authentication mechanism with hashed passwords. This makes it easier to get started, and you can change to RDS / Plant Scale later
 
 The script does the following in order:
@@ -51,3 +67,6 @@ The script will install packages globally on your machine if they are not found,
 
 Contributions are always welcome! Please submit a PR if you have any improvements or feature additions.
 
+```
+
+```

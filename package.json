@@ -1,14 +1,18 @@
 {
   "name": "tankit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A script that will boot strap a node.ts Prisma MySql Api. ",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test"
+    "test": "npm run test",
+    "postinstall": "echo 'Please run ./node_modules/.bin/init_project to initialize your project.'"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tannerpace/EasyApi.git"
+  },
+  "bin": {
+    "tankit-init": "./setupProject.sh"
   },
   "keywords": [
     "prisma",
