@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test",
-    "postinstall": "echo 'Please run ./node_modules/.bin/init_project to initialize your project.'"
+    "postinstall": "echo 'Please run npx tankit-init to start the setup"
   },
   "repository": {
     "type": "git",
