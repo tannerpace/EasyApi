@@ -1,5 +1,5 @@
 {
-  "name": "TanKit",
+  "name": "tankit",
   "version": "1.0.0",
   "description": "A script that will boot strap a node.ts Prisma MySql Api. ",
   "main": "index.js",
