@@ -12,7 +12,7 @@
     "url": "git+https://github.com/tannerpace/EasyApi.git"
   },
   "bin": {
-    "tankit-init": "./setupProject.sh"
+    "tankit-init": "./init_project.sh"
   },
   "keywords": [
     "prisma",
