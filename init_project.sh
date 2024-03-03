@@ -1,6 +1,7 @@
 #!/bin/bash
 
-read -p "Enter the name of your project: " project_name
+# Use the current directory name as the project name
+project_name=$(basename "$PWD")
 read -p "Enter git hub username: " GH_USERNAME
 read -p "Enter public or private: " VIS
 # Check if repository VIS is provided
