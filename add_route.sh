@@ -11,6 +11,13 @@ read -p "Is this router protected? (yes/no): " is_protected
 # Define the router file path
 router_file_path="./src/routes/${router_name}.ts"
 
+# Ensure the directory exists
+router_dir=$(dirname "$router_file_path")
+if [ ! -d "$router_dir" ]; then
+  echo "Directory $router_dir does not exist. Creating it..."
+  mkdir -p "$router_dir"
+fi
+
 # Create the router file
 echo "Creating $router_file_path..."
 
