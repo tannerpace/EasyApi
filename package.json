@@ -1,0 +1,29 @@
+{
+  "name": "easyapi",
+  "version": "1.0.0",
+  "description": "A script that will boot strap a node.ts Prisma MySql Api. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tannerpace/EasyApi.git"
+  },
+  "keywords": [
+    "prisma",
+    "node.js",
+    "node.ts",
+    "mysql",
+    "api",
+    "backend",
+    "express",
+    "router"
+  ],
+  "author": "Tanner Bleakley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tannerpace/EasyApi/issues"
+  },
+  "homepage": "https://github.com/tannerpace/EasyApi#readme"
+}
