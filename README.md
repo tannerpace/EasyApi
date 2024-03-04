@@ -64,14 +64,14 @@ Provide the model name and attributes as prompted. The script updates your Prism
 
 ## Contributing
 
-Contributions to TankIt are welcome! If you have suggestions for improvement or have found a bug, please feel free to open an issue or submit a pull request on our [GitHub repository](https://github.com/tannerpace/EasyApi).
+Contributions to Tankit are welcome! If you have suggestions for improvement or have found a bug, please feel free to open an issue or submit a pull request on our [GitHub repository](https://github.com/tannerpace/EasyApi).
 
 ## License
 
 TankIt is MIT licensed. 
 
-## Author
+## questions 
 
-TankIt was created by Tanner Bleakley. For any questions, suggestions, or contributions, please contact Tanner via [GitHub](https://github.com/tannerpace).
+ For any questions, suggestions, or contributions, please contact me via [GitHub](https://github.com/tannerpace).
 
-TankIt strives to make backend development simpler and more enjoyable. By handling the initial setup and repetitive tasks, it allows developers to focus on creating applications business logic. 
+Tankit strives to make backend development simpler and more enjoyable. By handling the initial setup and repetitive tasks, it allows developers to focus on creating applications business logic, eliminating tedious setup tasks and time spent writing boilerplate code.
