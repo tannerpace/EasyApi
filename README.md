@@ -1,5 +1,6 @@
-# Tankit a Node.js + Prisma + MySQL Project Setup Script
+# Tankit 
 
+##Node.js + Prisma + MySQL Project Setup Script
 
 
 ## Overview
@@ -67,10 +68,10 @@ Contributions to TankIt are welcome! If you have suggestions for improvement or 
 
 ## License
 
-TankIt is MIT licensed, as found in the LICENSE file.
+TankIt is MIT licensed. 
 
 ## Author
 
 TankIt was created by Tanner Bleakley. For any questions, suggestions, or contributions, please contact Tanner via [GitHub](https://github.com/tannerpace).
 
-TankIt strives to make backend development simpler and more enjoyable. By handling the initial setup and repetitive tasks, it allows developers to focus on what truly matters: creating outstanding applications.
+TankIt strives to make backend development simpler and more enjoyable. By handling the initial setup and repetitive tasks, it allows developers to focus on creating applications business logic. 
