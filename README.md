@@ -1,72 +1,76 @@
-# Node.js + Prisma + MySQL Project Setup Script
+# Tankit a Node.js + Prisma + MySQL Project Setup Script
+
+
+
+## Overview
+
+TankIt is a powerful NPM package designed to bootstrap Node.js TypeScript applications, focusing on the quick setup of APIs using MySQL and Prisma ORM. It provides developers with a suite of scripts that automate the tedious aspects of initial project setup, including project structure creation, route and model generation, and database configuration. TankIt aims to streamline the development process, allowing developers to concentrate on writing business logic and core functionalities.
+
+## Features
+
+- **Project Initialization (`tankit-init`)**: Sets up a new Node.js TypeScript project with essential configurations and structures for a Prisma-MySQL backend API.
+- **Route Addition (`add-route`)**: Simplifies the process of adding new Express routes to your application, complete with CRUD operation templates.
+- **Model Addition (`add-model`)**: Automates the addition of new models to your Prisma schema, facilitating quick integration of new database tables and relationships.
+- **Compatibility with `prisma-zodifier`**: While not part of TankIt, it's recommended to use `prisma-zodifier` alongside to convert Prisma schemas into Zod schemas, ensuring type-safe APIs.
 
 ## Getting Started
 
-After installing Tankit, you can easily initialize a new project with all the necessary configurations for Node.js, Prisma, and MySQL, including TypeScript, Prettier, and ESLint setups.
-
 ### Prerequisites
 
-Ensure you have Node.js, jq, Homebrew (for macOS), pnpm, and MySQL server installed on your machine.
+Before installing TankIt, make sure you have the following installed:
+- Node.js
+- npm (Node Package Manager)
+- Git
+- Prisma CLI (for Prisma operations)
 
-### Initialize a New Project
+### Installation
 
-Run the following command in your terminal:
+To install TankIt in your project, run the following command in your terminal:
+
+```bash
+npm install tankit
+```
+
+### Initializing a New Project
+
+After installing TankIt, you can initialize a new project by running:
 
 ```bash
 npx tankit-init
 ```
 
-This script is a bash script used to automatically generate a new project using Node.js, Prisma ORM, and MySQL database. The script includes necessary configurations for TypeScript, Prettier, and ESLint. It also generates a basic user authentication mechanism with hashed passwords. This makes it easier to get started, and you can change to RDS / Plant Scale later
+Follow the prompts to complete the setup. This script will create a new Node.js TypeScript project configured with Express, Prisma, and MySQL.
 
-The script does the following in order:
+### Adding a New Route
 
-1. Prompts the user for project name and path.
-2. Checks for the presence of `jq`, a command-line JSON processor. If not present, the script offers to install it.
-3. Checks for the directory where the project should be created. If the user does not provide one, the script uses the current directory.
-4. Prompts the user for MySQL credentials and database name. If not provided, the script uses default values.
-5. Creates a new Node.js project using `pnpm init`.
-6. Installs required project dependencies and devDependencies, including Express, jsonwebtoken, Prisma, TypeScript, and more.
-7. Initializes Prisma with MySQL as the data source provider.
-8. Writes the database connection URL to a `.env` file.
-9. Adds a `User` model to Prisma's schema file.
-10. Installs and configures ESLint and Prettier for code formatting and linting.
-11. Configures TypeScript for the project.
-12. Generates Prisma client using `npx prisma migrate dev --name init`.
-13. Creates the necessary directory structure for the project.
-14. Adds middleware for a single Prisma instance, password hashing, and authentication.
-15. Creates a user router for user-related routes.
+To add a new route to your project, execute:
 
-The script also has necessary error checks in place to ensure that operations are successful before proceeding to the next step.
-
-## Prerequisites
-
-The script requires the following installed on your machine:
-
-- Node.js and npm
-- jq
-- Homebrew
-- pnpm
-- MySQL server
-
-## Usage
-
-- Download or clone the bash script to your local machine.
-- Run the script using the command `bash init_project.sh`.
-
-The script will guide you through the rest of the process via prompts.
-
-## Note
-
-This script assumes you are using macOS or a Linux-based operating system. For other operating systems, you may need to modify the script to match your environment.
-
-## Caution
-
-The script will install packages globally on your machine if they are not found, including `jq` and `Homebrew`. Make sure you are comfortable with this before running the script.
-
-## Contribution
-
-Contributions are always welcome! Please submit a PR if you have any improvements or feature additions.
-
+```bash
+npx add-route
 ```
 
+You'll be prompted to enter the name of the route and whether it should be protected. The script generates a router file in the specified directory with a template for CRUD operations.
+
+### Adding a New Model
+
+To add a new model to your Prisma schema, use:
+
+```bash
+npx add-model
 ```
+
+Provide the model name and attributes as prompted. The script updates your Prisma schema file with the new model definition.
+
+## Contributing
+
+Contributions to TankIt are welcome! If you have suggestions for improvement or have found a bug, please feel free to open an issue or submit a pull request on our [GitHub repository](https://github.com/tannerpace/EasyApi).
+
+## License
+
+TankIt is MIT licensed, as found in the LICENSE file.
+
+## Author
+
+TankIt was created by Tanner Bleakley. For any questions, suggestions, or contributions, please contact Tanner via [GitHub](https://github.com/tannerpace).
+
+TankIt strives to make backend development simpler and more enjoyable. By handling the initial setup and repetitive tasks, it allows developers to focus on what truly matters: creating outstanding applications.
