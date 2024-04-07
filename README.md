@@ -5,7 +5,7 @@
 
 ## Overview
 
-TankIt is a powerful NPM package designed to bootstrap Node.js TypeScript applications, focusing on the quick setup of APIs using MySQL and Prisma ORM. It provides developers with a suite of scripts that automate the tedious aspects of initial project setup, including project structure creation, route and model generation, and database configuration. TankIt aims to streamline the development process, allowing developers to concentrate on writing business logic and core functionalities.
+TankIt is a powerful NPM package designed to bootstrap Node.ts applications, focusing on the quick setup of APIs using MySQL and Prisma ORM. It provides developers with a suite of scripts that automate the tedious aspects of initial project setup, including project structure creation, route and model generation, and database configuration. TankIt aims to streamline the development process, allowing developers to concentrate on writing business logic and core functionalities.
 
 ## Features
 
