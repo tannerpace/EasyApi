@@ -1,6 +1,6 @@
 # Tankit 
 
-##Node.js + Prisma + MySQL Project Setup Script
+## Node.js + Prisma + MySQL Project Setup Script
 
 
 ## Overview
